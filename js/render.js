@@ -265,21 +265,35 @@ function applyTint(mediaEl) {
     // then pick the best-scoring candidate that is hue-distinct from accents
     // already used elsewhere on the page.
     const BINS = 24; // 15° per bin
-    const bins = Array.from({ length: BINS }, () => ({ w: 0, c: 0, r: 0, g: 0, b: 0 }));
-    let n = 0, cn = 0, r = 0, g = 0, b = 0;
+    let n = 0, r = 0, g = 0, b = 0;
     for (let i = 0; i < d.length; i += 4) {
       if (d[i + 3] < 200) continue; // skip transparent pixels
-      const pr = d[i], pg = d[i + 1], pb = d[i + 2];
-      r += pr; g += pg; b += pb; n++;
-      const mx = Math.max(pr, pg, pb), mn = Math.min(pr, pg, pb);
-      const sat = mx - mn;
-      if (sat < 28 || mx < 60) continue; // ignore gray/near-black background
-      cn++;
-      const bin = bins[Math.floor(rgbToHue(pr, pg, pb) / (360 / BINS)) % BINS];
-      bin.w += sat; bin.c++; bin.r += pr * sat; bin.g += pg * sat; bin.b += pb * sat;
+      r += d[i]; g += d[i + 1]; b += d[i + 2]; n++;
     }
     if (!n) return;
-    if (cn < n * 0.02) {
+    // Histogram pass, parameterized by a minimum saturation so pale teasers
+    // (pastel renders on white paper figures) can rerun with a relaxed cutoff.
+    let bins, cn;
+    const collect = (satMin) => {
+      bins = Array.from({ length: BINS }, () => ({ w: 0, c: 0, r: 0, g: 0, b: 0 }));
+      cn = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i + 3] < 200) continue;
+        const pr = d[i], pg = d[i + 1], pb = d[i + 2];
+        const mx = Math.max(pr, pg, pb), mn = Math.min(pr, pg, pb);
+        const sat = mx - mn;
+        if (sat < satMin || mx < 60) continue; // ignore gray/near-black background
+        cn++;
+        const bin = bins[Math.floor(rgbToHue(pr, pg, pb) / (360 / BINS)) % BINS];
+        bin.w += sat; bin.c++; bin.r += pr * sat; bin.g += pg * sat; bin.b += pb * sat;
+      }
+    };
+    collect(28);
+    // Even a sparse colorful region (e.g. a small rendering on a white page)
+    // is a better hue signal than the near-white average, so gate on a small
+    // ABSOLUTE pixel count — and try a softer saturation cutoff before giving up.
+    if (cn < 10) collect(14);
+    if (cn < 10) {
       // Whole media is near-gray → no reliable hue; keep the global theme.
       const ar = Math.round(r / n), ag = Math.round(g / n), ab = Math.round(b / n);
       if (Math.max(ar, ag, ab) - Math.min(ar, ag, ab) < 16) return;
@@ -330,15 +344,18 @@ function initTints() {
     }
     const v = pub.querySelector(".pub-media video");
     if (v) {
-      const tryTint = () => {
+      const tryTint = (attempt = 0) => {
         applyTint(v);
-        // First frame can be blank/monochrome — retry once after playback starts.
-        if (!pub.classList.contains("tinted")) {
-          setTimeout(() => applyTint(v), 1200);
+        // Early frames can be blank/white — retry a few times as playback
+        // advances so white-dominant teasers still get sampled on content.
+        if (!pub.classList.contains("tinted") && attempt < 4) {
+          setTimeout(() => tryTint(attempt + 1), 1200);
         }
       };
       if (v.readyState >= 2) tryTint();
-      else v.addEventListener("loadeddata", tryTint, { once: true });
+      // NOTE: wrap in an arrow fn — passing tryTint directly would receive the
+      // Event object as `attempt` and disable the retry loop.
+      else v.addEventListener("loadeddata", () => tryTint(), { once: true });
     }
   });
 }
