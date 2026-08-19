@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="graphite">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Personal academic homepage of Yuqin Lu">
+<title>Yuqin Lu</title>
+<link rel="icon" type="image/png" href="assets/favicon.png?v=3">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=3">
+<!-- The ?v= number busts browser caches: bump it whenever you change css/js files -->
+<link rel="stylesheet" href="css/style.css?v=31">
+</head>
+<body>
+<!-- SVG displacement filter for true glass refraction on the video badge.
+     Applied only on Chromium (see render.js) — Safari/Firefox can't do
+     backdrop-filter: url() and fall back to the simulated glass. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="glass-lens" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="7" result="noise"/>
+    <feGaussianBlur in="noise" stdDeviation="1.5" result="soft"/>
+    <feDisplacementMap in="SourceGraphic" in2="soft" scale="32" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<div class="layout">
+
+  <aside>
+    <img class="avatar" src="assets/photo-web.jpg?v=1" alt="Yuqin Lu">
+    <h1>Yuqin Lu</h1>
+    <div class="role">Ph.D. Student</div>
+    <div class="affil">
+      <!-- Computer Vision Lab<br> -->
+      South China University of Technology<br>
+      <span class="location">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+        Guangzhou, China
+      </span>
+    </div>
+    <a class="lab-badge" href="https://shengfenghe.github.io/group" target="_blank" rel="noopener" title="Computer Vision Lab">
+      <img src="assets/cvl-small.png?v=4" alt="Computer Vision Lab logo">
+    </a>
+    <div class="social">
+      <a href="mailto:spaceluyq@gmail.com">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        Email: spaceluyq@gmail.com
+      </a>
+      <!-- CV: hidden for now — uncomment and set href when ready
+      <a href="#">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        CV
+      </a>
+      -->
+      <a href="#" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.75 2.69 1.25 3.34.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.35.77 1.05.77 2.12 0 1.53-.01 2.76-.01 3.14 0 .3.2.67.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+        GitHub
+      </a>
+      <a href="https://scholar.google.com/citations?user=qhxRGmIAAAAJ&amp;hl=en" target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+        Google Scholar
+      </a>
+      <!-- Twitter: hidden for now — uncomment and set href when ready
+      <a href="#">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.77 7.74L23.2 22h-6.24l-4.89-6.4L6.47 22H3.34l7.24-8.28L2.8 2h6.4l4.42 5.85L18.9 2zm-1.1 18.1h1.73L7.29 3.8H5.43L17.8 20.1z"/></svg>
+        Twitter
+      </a>
+      -->
+    </div>
+        <div class="interests">
+      <h3>Research Interests</h3>
+      <span class="tag">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/></svg>
+        Deep Learning
+      </span>
+      <span class="tag">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        Computer Vision
+      </span>
+      <span class="tag">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16.5v-9L12 3 3 7.5v9L12 21l9-4.5zM12 5.2l6.3 3.15L12 11.5 5.7 8.35 12 5.2zM5 10l6 3v5.8l-6-3V10zm8 8.8V13l6-3v5.8l-6 3z"/></svg>
+        3D Reconstruction
+      </span>
+      <span class="tag">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m19 9 1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/></svg>
+        Generative Models
+      </span>
+      <span class="tag">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM11 19.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        World Models
+      </span>
+    </div>
+  </aside>
+
+  <main>
+    <section id="about">
+      <h2>About</h2>
+      <p>
+        I am a Ph.D. student at the School of Computer Science and Engineering,
+        <a href="https://www.scut.edu.cn/en/" target="_blank" rel="noopener">South China University of Technology</a>,
+        co-advised by <a href="https://shengfenghe.github.io/" target="_blank" rel="noopener">Prof. Shengfeng He</a>
+        and Prof. Guiqing Li. I am currently a research intern with the
+        <a href="https://github.com/Orange-3DV-Team" target="_blank" rel="noopener">Orange 3DV Team</a>
+        at Moku Lab, Alibaba. In 2025, I was a visiting Ph.D. student at
+        <a href="https://www.smu.edu.sg/" target="_blank" rel="noopener">Singapore Management University</a>,
+        working with Prof. Shengfeng He's group. Before my Ph.D., I received both my
+        Master's and Bachelor's degrees in Information Engineering from
+        <a href="https://english.gdut.edu.cn/" target="_blank" rel="noopener">Guangdong University of Technology</a>,
+        where I was fortunate to work with Prof. Qingyun Dai
+        and Prof. Jiangzhong Cao.
+      </p>
+      <p>
+        My research lies in <strong>3D computer vision</strong> and
+        <strong>generative models</strong> — teaching machines to reconstruct, generate,
+        and interact with 3D worlds from limited visual input. My recent work spans
+        <strong>3D Gaussian Splatting</strong>, <strong>neural scene representations</strong>,
+        and <strong>video world models</strong>.
+      </p>
+    </section>
+
+    <!-- News: hidden for now — uncomment to re-enable (data lives in data/news.js)
+    <section id="news">
+      <h2>News</h2>
+      <div id="news-list"></div>
+    </section>
+    -->
+
+    <section id="publications">
+      <h2>Selected Publications</h2>
+      <!-- Rendered from data/publications.js -->
+      <div id="pub-list"></div>
+    </section>
+
+        <!-- Education: hidden for now — uncomment to re-enable
+    <section id="education">
+      <h2>Education</h2>
+      <div class="edu-item">
+        <div class="edu-dot"></div>
+        <div><strong>Ph.D. in Computer Science</strong><span>South China University of Technology · 2024 – Present</span></div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-dot"></div>
+        <div><strong>B.S. in Computer Science</strong><span>Undergrad University · 2020 – 2024</span></div>
+      </div>
+    </section>
+    -->
+
+    <footer>© <span id="year"></span> Yuqin Lu</footer>
+  </main>
+
+</div>
+
+<script src="data/news.js?v=2"></script>
+<script src="data/publications.js?v=11"></script>
+<script src="js/render.js?v=18"></script>
+<!-- Hidden theme picker: only appears when visiting the page with ?themes appended -->
+<script src="js/theme-preview.js?v=3"></script>
+</body>
+</html>

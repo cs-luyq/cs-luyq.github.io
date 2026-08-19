@@ -1,0 +1,350 @@
+/* ==========================================================================
+   Personal academic page — Sidebar Profile style
+   Palette & sizing are driven by the variables below; edit them to retheme.
+   ========================================================================== */
+:root {
+  --bg: #f8fafc;          /* slate-50: cool off-white */
+  --text: #1e293b;        /* slate-800: blue-tinted dark, softer than near-black */
+  --heading: #0f172a;     /* slate-900: headings slightly deeper */
+  --muted: #64748b;       /* slate-500: cool gray for secondary text */
+  --accent: #0284c7;      /* sky-600 azure */
+  --accent-soft: #e0f2fe; /* sky-100 */
+  --card: #ffffff;
+  --rule: #e2e8f0;        /* slate-200 */
+}
+
+/* ------------------------- Alternative palettes --------------------------
+   Preview via the floating picker (js/theme-preview.js). Once you decide,
+   copy the winner's values into :root above and delete the rest + picker. */
+[data-theme="graphite"] {         /* GitHub-like: familiar, ultra readable */
+  --bg: #f6f8fa; --text: #1f2328; --heading: #1f2328; --muted: #656d76;
+  --accent: #0969da; --accent-soft: #ddf4ff; --card: #ffffff; --rule: #d8dee4;
+}
+[data-theme="navy"] {             /* deep royal blue, formal & serious */
+  --bg: #f7f9fc; --text: #1e2a44; --heading: #14203a; --muted: #5b6b85;
+  --accent: #1d4ed8; --accent-soft: #dbeafe; --card: #ffffff; --rule: #dfe6f0;
+}
+[data-theme="teal"] {             /* calm teal-green, fresh & quiet */
+  --bg: #f7fafa; --text: #1c2b2d; --heading: #0f2426; --muted: #5f7470;
+  --accent: #0d9488; --accent-soft: #ccfbf1; --card: #ffffff; --rule: #dde8e6;
+}
+[data-theme="paper"] {            /* warm paper white + cyan, editorial feel */
+  --bg: #faf9f7; --text: #292524; --heading: #1c1917; --muted: #78716c;
+  --accent: #0e7490; --accent-soft: #cffafe; --card: #ffffff; --rule: #e7e5e4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg); color: var(--text);
+  line-height: 1.7; font-size: clamp(14.5px, 0.3vw + 13.5px, 16px);
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.layout {
+  display: grid;
+  /* Sidebar scales with the viewport; main column absorbs the rest. A wider
+     ceiling (1280px) keeps large monitors filled without hurting readability. */
+  grid-template-columns: clamp(260px, 22vw, 300px) minmax(0, 1fr);
+  gap: clamp(28px, 4.5vw, 48px); max-width: 1280px; margin: 0 auto;
+  padding: clamp(28px, 5vw, 40px) clamp(16px, 3vw, 28px);
+}
+
+/* --------------------------------- Sidebar ------------------------------- */
+aside { position: sticky; top: 42px; align-self: start; text-align: center; }
+.avatar {
+  width: 180px; height: 180px; border-radius: 50%; margin: 0 auto 16px;
+  object-fit: cover; display: block;
+  box-shadow: 0 8px 24px rgba(2, 132, 199, .18);
+}
+.avatar-placeholder {
+  background: linear-gradient(135deg, #7dd3fc, #93c5fd);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 14px;
+}
+aside h1 { font-size: 26px; margin-bottom: 4px; color: var(--heading); }
+.role { color: var(--muted); font-size: 15px; margin-bottom: 2px; }
+.affil { color: var(--muted); font-size: 14px; margin-bottom: 10px; line-height: 1.5; }
+/* Lab logo: standalone centered mark below the affiliation — readable size,
+   slightly muted so it stays secondary to the text */
+.lab-badge { display: block; width: fit-content; margin: 0 auto 16px; }
+.lab-badge img { height: 72px; width: auto; display: block; opacity: .92; transition: opacity .15s; }
+.lab-badge:hover img { opacity: 1; }
+.location {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 13.5px; margin-top: 2px;
+}
+.location .icon { width: 15px; height: 15px; fill: currentColor; opacity: .8; }
+.social { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.social a {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border: 1px solid var(--rule); border-radius: 999px;
+  font-size: 13px; background: var(--card); color: var(--text);
+  transition: all .15s;
+}
+.social a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+.social .icon { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+.interests { margin: 24px auto 0; max-width: 260px; text-align: left; background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; }
+.interests h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--accent-soft); color: var(--accent);
+  font-size: 13px; padding: 3px 11px; border-radius: 999px; margin: 0 6px 8px 0;
+}
+.tag .icon { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; opacity: .85; }
+
+/* ---------------------------------- Main --------------------------------- */
+/* Make main a size container so publication cards can respond to the COLUMN
+   width they actually occupy (not the viewport) — fixes the mid-width squeeze
+   where the sidebar is docked but the content column is narrow. */
+main { container-type: inline-size; }
+main section { margin-bottom: 32px; }
+h2 {
+  font-size: 21px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+  color: var(--heading);
+}
+h2::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+p + p { margin-top: 12px; }
+
+/* News */
+.news-item { display: flex; gap: 12px; margin-bottom: 10px; }
+.news-date {
+  background: var(--accent-soft); color: var(--accent); border-radius: 8px;
+  padding: 1px 10px; font-size: 13px; font-weight: 600;
+  min-width: 88px; text-align: center; height: fit-content; margin-top: 3px;
+  flex-shrink: 0;
+}
+
+/* Publication media cards */
+.pub {
+  --card-radius: 18px;
+  background: var(--card); border: 1px solid var(--rule); border-radius: var(--card-radius);
+  margin-bottom: 16px; overflow: hidden;
+  display: grid; grid-template-columns: clamp(200px, 28vw, 300px) minmax(0, 1fr);
+  transition: box-shadow .18s, transform .18s;
+}
+.pub:hover { box-shadow: 0 8px 22px rgba(0,0,0,.08); transform: translateY(-2px); }
+/* Teaser-adaptive tint: js sets --tint-hsl ("h s% l%") from the teaser's
+   dominant HUE at normalized saturation/lightness — a light uniform wash over
+   the TEXT AREA only; media letterbox and border stay neutral. */
+.pub.tinted .pub-body {
+  background:
+    linear-gradient(hsl(var(--tint-hsl) / .06), hsl(var(--tint-hsl) / .06)),
+    var(--card);
+}
+.pub.tinted:hover { box-shadow: 0 10px 26px hsl(var(--tint-hsl) / .28); }
+/* Per-card mini-theme: venue badge & chips take the card's normalized hue.
+   Cards without a usable teaser color keep the global accent. */
+.pub.tinted .venue-badge { background: var(--card-accent, var(--accent)); }
+/* On tinted cards the chips sit on the colored wash, so a soft tinted chip
+   background would melt into it — use solid card-white pills instead, with a
+   faint hue ring for definition. */
+.pub.tinted .pub-meta a {
+  background: var(--card);
+  color: var(--card-accent, var(--accent));
+  box-shadow: inset 0 0 0 1px hsl(var(--tint-hsl) / .30);
+}
+.pub.tinted .pub-meta a:hover {
+  background: var(--card-accent, var(--accent));
+  color: #fff;
+  box-shadow: none;
+}
+.pub-media {
+  position: relative; background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+  min-height: 170px; height: 100%; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  color: #85b3ce; font-size: 13px;
+}
+.pub-media img, .pub-media video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  transition: transform .35s ease;
+}
+/* Hide the placeholder label once real media is present (it reappears
+   automatically if the file 404s, since onerror removes the element) */
+.pub-media:has(img) .ph, .pub-media:has(video) .ph { display: none; }
+/* Subtle zoom on hover makes the teaser feel alive (cover mode only) */
+.pub:hover .pub-media img, .pub:hover .pub-media video { transform: scale(1.045); }
+/* fit-contain: show the entire figure with equal padding on all sides.
+   The slot has NO forced aspect ratio — the media's natural ratio drives the
+   slot height, so padding is uniform by construction. Rounding is applied to
+   a WRAPPER (.media-clip) forced through a mask layer: the browser composites
+   the video into the wrapper surface first, so the rounded clip is properly
+   anti-aliased (radius stays concentric: --card-radius − --media-pad). */
+.pub-media.fit-contain {
+  --media-pad: 10px;
+  background: #ffffff; padding: var(--media-pad);
+  min-height: 0;
+}
+/* Keep the video badge INSIDE the media area: offset by the slot padding
+   plus the usual 10px inset from the media's own edge */
+.pub-media.fit-contain .play-badge {
+  bottom: calc(var(--media-pad) + 10px);
+  left: calc(var(--media-pad) + 10px);
+}
+.pub-media.fit-contain .media-clip {
+  display: block; width: 100%;
+  border-radius: calc(var(--card-radius) - var(--media-pad));
+  overflow: hidden; isolation: isolate;
+  -webkit-mask-image: linear-gradient(#fff 0 0);
+  mask-image: linear-gradient(#fff 0 0);
+}
+.pub-media.fit-contain img, .pub-media.fit-contain video {
+  position: static; width: 100%; height: auto; display: block;
+}
+.pub:hover .pub-media.fit-contain img, .pub:hover .pub-media.fit-contain video { transform: none; }
+/* Featured publication: full-width card, big teaser on top.
+   Non-contain teasers get a 16:9 slot; contain mode sizes itself. */
+.pub.featured { grid-template-columns: 1fr; }
+.pub.featured .pub-media { min-height: 0; height: auto; }
+.pub.featured .pub-media:not(.fit-contain) { aspect-ratio: 16 / 9; }
+.pub.featured .pub-title { font-size: clamp(16px, 1.6vw, 18.5px); }
+.play-badge {
+  position: absolute; bottom: 10px; left: 10px;
+  padding: 4px 14px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+  overflow: hidden;
+  /* Liquid glass: mild blur + brightness/contrast gain reads as light being
+     gathered by a lens rather than frosted. (True pixel refraction needs
+     backdrop-filter: url(#displacement) — Chromium-only, so we simulate.) */
+  background: none;
+  backdrop-filter: blur(5px) saturate(180%) brightness(1.18) contrast(1.06);
+  -webkit-backdrop-filter: blur(5px) saturate(180%) brightness(1.18) contrast(1.06);
+  box-shadow:
+    inset 0 0 0 .5px rgba(255, 255, 255, .2),            /* hairline, not a border */
+    inset 1.8px 2.4px 2px -2px rgba(255, 255, 255, .9),  /* top-left specular edge */
+    inset -1.5px -1.8px 2px -2px rgba(255, 255, 255, .55),/* bottom-right rim light */
+    inset 0 0 10px rgba(255, 255, 255, .08),              /* faint inner glow */
+    0 4px 12px rgba(0, 0, 0, .22);
+}
+/* Curved-surface sheen: bright caustic at the top edge, soft catch at bottom */
+.play-badge::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(130% 100% at 28% -10%, rgba(255, 255, 255, .30), transparent 55%),
+    radial-gradient(90% 60% at 75% 120%, rgba(255, 255, 255, .14), transparent 60%);
+}
+/* Adaptive contrast (js sets .media-bright when the footage under the badge
+   is bright): dark text on light glass, dark hairline instead of white rims */
+.pub-media.media-bright .play-badge {
+  color: rgba(15, 23, 42, .88);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, .55);
+  background: rgba(255, 255, 255, .28);
+  box-shadow:
+    inset 0 0 0 .5px rgba(15, 23, 42, .16),
+    inset 1.8px 2.4px 2px -2px rgba(255, 255, 255, .95),
+    inset -1.5px -1.8px 2px -2px rgba(255, 255, 255, .6),
+    0 3px 10px rgba(0, 0, 0, .12);
+}
+/* Non-featured cards have a small media column: tighter badge, tighter inset */
+.pub:not(.featured) .play-badge {
+  font-size: 10.5px; padding: 3px 10px;
+  bottom: 8px; left: 8px;
+}
+.pub:not(.featured) .pub-media.fit-contain .play-badge {
+  bottom: calc(var(--media-pad) + 4px);
+  left: calc(var(--media-pad) + 4px);
+}
+/* Chromium only (html.refract set in render.js): real refraction — the SVG
+   displacement filter in index.html actually bends the pixels beneath. */
+.refract .play-badge {
+  backdrop-filter: url(#glass-lens) blur(2.5px) saturate(180%) brightness(1.16) contrast(1.05);
+  -webkit-backdrop-filter: url(#glass-lens) blur(2.5px) saturate(180%) brightness(1.16) contrast(1.05);
+}
+.pub-body { padding: clamp(14px, 1.8vw, 18px) clamp(16px, 2vw, 20px); display: flex; flex-direction: column; }
+.pub-title { font-weight: 600; font-size: clamp(15px, 1.3vw, 16.5px); line-height: 1.45; }
+/* Titles stay on the heading black for a calm, academic look; hover still
+   underlines for link affordance. */
+.pub-title a { color: var(--heading); }
+.pub-authors { font-size: 14px; color: var(--muted); margin-top: 3px; }
+.pub-authors .me { color: var(--text); font-weight: 600; }
+.pub-authors sup { font-size: 10px; line-height: 0; }
+/* Global author-marker legend under the section title */
+.pub-legend { font-size: 12.5px; color: var(--muted); margin: -12px 6px 18px; opacity: .9; }
+/* Description as a pull-quote TL;DR: accent bar + indent + italic clearly
+   separates it from the author list; the bar follows the card's accent. */
+.pub-desc {
+  font-size: 13.5px; color: var(--muted); margin-top: 8px;
+  padding-left: 10px; font-style: italic;
+  border-left: 2px solid var(--card-accent, var(--accent));
+}
+.pub-meta { margin-top: auto; padding-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.venue-badge {
+  background: var(--accent); color: #fff; font-size: 12.5px; font-weight: 600;
+  padding: 2px 10px; border-radius: 6px;
+}
+.award-badge { background: #fef3c7; color: #b45309; font-size: 12.5px; font-weight: 600; padding: 2px 10px; border-radius: 6px; }
+/* Link chips: pill buttons with mini icons, filled on hover */
+.pub-meta a {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12.5px; font-weight: 600;
+  padding: 3px 11px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent);
+  transition: all .15s;
+}
+.pub-meta a:hover { background: var(--accent); color: #fff; text-decoration: none; }
+.pub-meta a .icon { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
+
+/* BibTeX popup */
+.bib-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(15, 23, 42, .45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.bib-dialog {
+  background: var(--card); border-radius: 14px;
+  width: 100%; max-width: 620px; max-height: 80vh;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+}
+.bib-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 18px; border-bottom: 1px solid var(--rule);
+  font-weight: 600; color: var(--heading);
+}
+.bib-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 16px; color: var(--muted); padding: 2px 6px; border-radius: 6px;
+}
+.bib-close:hover { background: var(--bg); color: var(--heading); }
+.bib-pre {
+  margin: 0; padding: 16px 18px; overflow: auto; flex: 1;
+  font: 12.5px/1.65 ui-monospace, Menlo, Consolas, monospace;
+  white-space: pre-wrap; word-break: break-word;
+  color: var(--text); background: var(--bg);
+}
+.bib-actions {
+  padding: 12px 18px; border-top: 1px solid var(--rule);
+  display: flex; justify-content: flex-end;
+}
+.bib-copy {
+  border: none; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
+  background: var(--accent); color: #fff;
+  padding: 6px 20px; border-radius: 999px; transition: opacity .15s;
+}
+.bib-copy:hover { opacity: .88; }
+
+/* Education */
+.edu-item { display: flex; gap: 16px; margin-bottom: 16px; }
+.edu-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 8px; flex-shrink: 0; }
+.edu-item strong { display: block; }
+.edu-item span { color: var(--muted); font-size: 14.5px; }
+
+footer { text-align: center; color: var(--muted); font-size: 13.5px; padding-bottom: 20px; }
+
+/* ------------------------------- Responsive ------------------------------ */
+/* Sidebar collapses above content */
+@media (max-width: 820px) {
+  .layout { grid-template-columns: 1fr; gap: 32px; }
+  aside { position: static; }
+}
+/* Publication cards stack media above text whenever their COLUMN is narrow —
+   whether due to a docked sidebar on a mid-size window or a phone screen. */
+@container (max-width: 640px) {
+  .pub { grid-template-columns: 1fr; }
+  .pub-media { min-height: 0; height: auto; }
+  .pub-media:not(.fit-contain) { aspect-ratio: 16 / 9; }
+}
