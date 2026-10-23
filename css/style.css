@@ -97,7 +97,7 @@ aside h1 { font-size: 26px; margin-bottom: 4px; color: var(--heading); }
 /* Make main a size container so publication cards can respond to the COLUMN
    width they actually occupy (not the viewport) — fixes the mid-width squeeze
    where the sidebar is docked but the content column is narrow. */
-main { container-type: inline-size; }
+main { container-type: inline-size; min-width: 0; }
 main section { margin-bottom: 32px; }
 h2 {
   font-size: 21px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
@@ -139,12 +139,12 @@ p + p { margin-top: 12px; }
 /* On tinted cards the chips sit on the colored wash, so a soft tinted chip
    background would melt into it — use solid card-white pills instead, with a
    faint hue ring for definition. */
-.pub.tinted .pub-meta a {
+.pub.tinted .pub-meta :is(a, button) {
   background: var(--card);
   color: var(--card-accent, var(--accent));
   box-shadow: inset 0 0 0 1px hsl(var(--tint-hsl) / .30);
 }
-.pub.tinted .pub-meta a:hover {
+.pub.tinted .pub-meta :is(a, button):hover {
   background: var(--card-accent, var(--accent));
   color: #fff;
   box-shadow: none;
@@ -277,29 +277,26 @@ p + p { margin-top: 12px; }
 }
 .award-badge { background: #fef3c7; color: #b45309; font-size: 12.5px; font-weight: 600; padding: 2px 10px; border-radius: 6px; }
 /* Link chips: pill buttons with mini icons, filled on hover */
-.pub-meta a {
+.pub-meta :is(a, button) {
   display: inline-flex; align-items: center; gap: 5px;
+  font-family: inherit; line-height: inherit; border: 0; cursor: pointer;
   font-size: 12.5px; font-weight: 600;
   padding: 3px 11px; border-radius: 999px;
   background: var(--accent-soft); color: var(--accent);
   transition: all .15s;
 }
-.pub-meta a:hover { background: var(--accent); color: #fff; text-decoration: none; }
-.pub-meta a .icon { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
+.pub-meta :is(a, button):hover { background: var(--accent); color: #fff; text-decoration: none; }
+.pub-meta :is(a, button) .icon { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
 
 /* BibTeX popup */
-.bib-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(15, 23, 42, .45);
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-}
 .bib-dialog {
-  background: var(--card); border-radius: 14px;
-  width: 100%; max-width: 620px; max-height: 80vh;
-  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--card); color: var(--text); border: 0; border-radius: 14px;
+  width: calc(100% - 40px); max-width: 620px; max-height: 80vh; max-height: 80dvh;
+  margin: auto; padding: 0; overflow: hidden;
   box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
 }
+.bib-dialog[open] { display: flex; flex-direction: column; }
+.bib-dialog::backdrop { background: rgba(15, 23, 42, .45); }
 .bib-head {
   display: flex; justify-content: space-between; align-items: center;
   padding: 13px 18px; border-bottom: 1px solid var(--rule);
@@ -318,7 +315,7 @@ p + p { margin-top: 12px; }
 }
 .bib-actions {
   padding: 12px 18px; border-top: 1px solid var(--rule);
-  display: flex; justify-content: flex-end;
+  display: flex; justify-content: flex-end; align-items: center; gap: 12px;
 }
 .bib-copy {
   border: none; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
@@ -347,4 +344,32 @@ footer { text-align: center; color: var(--muted); font-size: 13.5px; padding-bot
   .pub { grid-template-columns: 1fr; }
   .pub-media { min-height: 0; height: auto; }
   .pub-media:not(.fit-contain) { aspect-ratio: 16 / 9; }
+}
+
+/* Small usability fixes that preserve the original layout and glass treatment. */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.skip-link {
+  position: fixed; top: 12px; left: 12px; z-index: 2000;
+  transform: translateY(-180%); padding: 8px 14px; border-radius: 8px;
+  background: var(--heading); color: #fff;
+}
+.skip-link:focus { transform: none; }
+.dialog-open { overflow: hidden; }
+.pub-title { overflow-wrap: anywhere; }
+.pub-media.fit-contain .media-clip { aspect-ratio: var(--media-aspect, auto); }
+.video-toggle {
+  font-family: inherit; line-height: inherit; border: 0; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+}
+.pub-media video { cursor: pointer; }
+.media-error-message { display: none; }
+.media-error .media-error-message { display: block; position: absolute; inset: 0; padding: 16px; background: var(--bg); color: var(--text); }
+.media-error .video-toggle { display: none; }
+.bib-status { margin-right: auto; font-size: 12.5px; color: var(--muted); }
+@media (min-width: 821px) and (max-height: 820px) {
+  aside { position: static; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .pub:hover, .pub:hover .pub-media img, .pub:hover .pub-media video { transform: none; }
 }

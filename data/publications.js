@@ -20,7 +20,8 @@
                          Use sparingly (1–2 headline papers).
      media    (optional) Teaser visual:
                 { type: "image", src: "assets/paper1.png", alt: "..." }
-                { type: "video", src: "assets/paper1.mp4" }   // autoplays muted, loops
+                { type: "video", src: "assets/paper1.mp4", poster: "assets/paper1.webp" }
+              Videos load/play when visible; motion/data preferences require Play.
               alt: accessibility text for IMAGES — read by screen readers,
               shown if the file fails to load, indexed by search engines.
               Describe the figure, e.g. "MoVerse pipeline overview".
@@ -29,8 +30,8 @@
                 fit: "cover"   (default) fills the slot, crops edges — photos/renders
                 fit: "contain" shows the whole figure with equal padding; the slot
                                sizes itself to the media's natural ratio
-              Slot shape via optional `aspect` (COVER mode only, default 16/9):
-                aspect: "2/1"  → sets the slot ratio; ignored in contain mode
+              Optional `aspect` reserves space before media loads:
+                aspect: "2/1"  → use the media's actual width/height ratio
               Card color: the card auto-derives a mini-theme (background wash,
               venue badge, chips) from the teaser's dominant hue. To override
               the auto-detected color, add e.g. accent: "#0d9488".
@@ -59,7 +60,7 @@ const PUBLICATIONS = [
     venue: "Technical Report 2026",
     desc: "Moverse builds a navigable 3D world from a single narrow-field-of-view image and renders interactive video in real time on a single RTX 4090.",
     featured: true,
-    media: { type: "video", src: "assets/teasers/moverse_web.mp4?v=2", fit: "contain", aspect: "832/480" },
+    media: { type: "video", poster: "assets/teasers/moverse_web-poster.webp", src: "assets/teasers/moverse_web.mp4?v=2", fit: "contain", aspect: "832/480" },
     links: { paper: "https://arxiv.org/abs/2606.13376", code: "https://github.com/Orange-3DV-Team/MoVerse", project: "https://orange-3dv-team.github.io/MoVerse/" },
     bibtex: `@article{moverse2026,
   title   = {MoVerse: Real-Time Video World Modeling with Panoramic Gaussian Scaffold},
@@ -75,7 +76,7 @@ const PUBLICATIONS = [
     venue: "arXiv 2026",
     desc: "Gimbal360 robustly anchors unposed NFoV images into a canonical viewing space, enabling structurally consistent and seamless 360° panorama generation.",
     featured: true,
-    media: { type: "image", src: "assets/teasers/gimbal360.jpg?v=1", alt: "Teaser of Gimbal360", fit: "contain", aspect: "2100/960" },
+    media: { type: "image", src: "assets/teasers/gimbal360.webp?v=1", alt: "Teaser of Gimbal360", fit: "contain", aspect: "2090/960" },
     links: { paper: "https://arxiv.org/abs/2603.23179", code: "https://github.com/Orange-3DV-Team/Gimbal360/", project: "https://orange-3dv-team.github.io/Gimbal360/" },
     bibtex: `@article{lu2026gimbal360,
   title={Gimbal360: Canonicalizing Planar Diffusion for Spherical Panorama Completion},
@@ -90,7 +91,7 @@ const PUBLICATIONS = [
     authors: ["Yuqin Lu", "Yihua Dai", "Yutao Jiang", "Tianyi Xiang", "Chuhua Xian", "Shengfeng He"],
     venue: "I3D 2026",
     desc: "Canvas3D enables precise 3D object manipulation and 3D-aware image synthesis driven entirely through intuitive 2D edits.",
-    media: { type: "video", src: "assets/teasers/canvas3d_web.mp4?v=1", fit: "contain", aspect: "853/480" },
+    media: { type: "video", poster: "assets/teasers/canvas3d_web-poster.webp", src: "assets/teasers/canvas3d_web.mp4?v=1", fit: "contain", aspect: "853/480" },
     links: { paper: "https://dl.acm.org/doi/10.1145/3804490" },
     bibtex: `@article{lu2026canvas3d,
   title={Canvas3D: Translating 2D Edits into Implicit Neural Instance Field},
@@ -109,7 +110,7 @@ const PUBLICATIONS = [
     authors: ["Yuqin Lu", "Yihua Dai", "Yang Zhou", "Guiqing Li", "Shengfeng He"],
     venue: "TVCG 2026",
     desc: "A top-down unfolding scheme to achieve compact, high-fidelity, and progressive 3D Gaussian Splatting for resource-constrained environments.",
-    media: { type: "image", src: "assets/teasers/unfoldgs.jpg?v=1", alt: "Teaser of Unfolding 3D Gaussian Splatting", fit: "contain", aspect: "800/480" },
+    media: { type: "image", src: "assets/teasers/unfoldgs.webp?v=1", alt: "Teaser of Unfolding 3D Gaussian Splatting", fit: "contain", aspect: "800/480" },
     links: { paper: "https://arxiv.org/abs/2604.11685", project: "https://cs-luyq.github.io/UnfoldingGS/" },
     bibtex: `@article{lu2026unfolding,
   title={Unfolding 3D Gaussian Splatting via Iterative Gaussian Synopsis},
@@ -124,7 +125,7 @@ const PUBLICATIONS = [
     authors: ["Yuhui Deng*", "Yuqin Lu*", "Yangyang Xu", "Yongwei Nie", "Shengfeng He"],
     venue: "AAAI 2025",
     desc: "A talking head generation framework that utilizes a \"facelet semantic bank\" to reconstruct occluded facial features through semantic correlation.",
-    media: { type: "image", src: "assets/teasers/talkinghead.jpg?v=1", alt: "Pipeline of talking head video generation via facelet compensation", fit: "contain", aspect: "1188/652" },
+    media: { type: "image", src: "assets/teasers/talkinghead.webp?v=1", alt: "Pipeline of talking head video generation via facelet compensation", fit: "contain", aspect: "1188/652" },
     links: { paper: "https://ojs.aaai.org/index.php/AAAI/article/view/32277/34432" },
     bibtex: `@inproceedings{deng2025occlusion,
   title={Occlusion-insensitive talking head video generation via facelet compensation},
@@ -142,7 +143,7 @@ const PUBLICATIONS = [
     authors: ["Jingxin Liang", "Yangyang Xu", "Haorui Song", "Yuqin Lu", "Yuhui Deng", "Yiyi Long", "Yan Huang", "Shengxin Liu", "Jianbo Jiao", "Shengfeng He"],
     venue: "Pattern Recognition 2025",
     desc: "ContX improves scene context prediction by integrating explicit linguistic-contextual priors and multi-modal layout alignment to overcome the limitations of traditional pixel-wise supervision.",
-    media: { type: "image", src: "assets/teasers/contx.jpg?v=1", fit: "contain", aspect: "1221/720" },
+    media: { type: "image", src: "assets/teasers/contx.webp?v=1", fit: "contain", aspect: "1221/720" },
     links: { paper: "https://ink.library.smu.edu.sg/cgi/viewcontent.cgi?article=11233&context=sis_research", code: "https://github.com/liangjingxin4747/ContX/" },
     bibtex: `@article{liang2025contx,
   title={ContX: Scene context prediction via context bank and layout perception},
@@ -160,7 +161,7 @@ const PUBLICATIONS = [
     authors: ["Yuqin Lu", "Bailin Deng", "Zhixuan Zhong", "Tianle Zhang", "Yuhui Quan", "Hongmin Cai", "Shengfeng He"],
     venue: "TPAMI 2024",
     desc: "3D Snapshot distills a 3D NeRF model into a single, visually plausible image that can be easily inverted back into an interactive 3D scene.",
-    media: { type: "video", src: "assets/teasers/3Dsnapshot_web.mp4?v=1", fit: "contain", aspect: "854/480" },
+    media: { type: "video", poster: "assets/teasers/3Dsnapshot_web-poster.webp", src: "assets/teasers/3Dsnapshot_web.mp4?v=1", fit: "contain", aspect: "854/480" },
     links: { paper: "https://ink.library.smu.edu.sg/cgi/viewcontent.cgi?article=10765&context=sis_research" },
     bibtex: `@article{lu20243d,
   title={3d snapshot: Invertible embedding of 3d neural representations in a single image},
@@ -179,7 +180,7 @@ const PUBLICATIONS = [
     authors: ["Yuqin Lu", "Jiangzhong Cao", "Shengfeng He", "Jiangtao Guo", "Qiliang Zhou", "Qingyun Dai"],
     venue: "Information Fusion 2023",
     desc: "A single-to-multi-view generation framework that improves generalization by enforcing contrastive alignment and uniformity constraints in latent space.",
-    media: { type: "image", src: "assets/teasers/augan.jpg?v=1", fit: "contain", aspect: "874/460" },
+    media: { type: "image", src: "assets/teasers/augan.webp?v=1", fit: "contain", aspect: "874/460" },
     links: { paper: "https://www.sciencedirect.com/science/article/abs/pii/S1566253523000192" },
     bibtex: `@article{lu2023learning,
   title={Learning invariant and uniformly distributed feature space for multi-view generation},

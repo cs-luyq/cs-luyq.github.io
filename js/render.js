@@ -5,9 +5,8 @@
 
 /** Escape plain-text fields before inserting into HTML. */
 function esc(s) {
-  const d = document.createElement("div");
-  d.textContent = s;
-  return d.innerHTML;
+  const entities = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  return String(s ?? "").replace(/[&<>"']/g, (ch) => entities[ch]);
 }
 
 /* ------------------------------- News ------------------------------------ */
@@ -24,34 +23,33 @@ function renderNews() {
 }
 
 /* --------------------------- Publications -------------------------------- */
-function renderMedia(media) {
-  // No media declared → neutral placeholder.
+function renderMedia(media, title, index) {
   if (!media || !media.src) {
     return `<div class="pub-media"><span class="ph">teaser figure</span></div>`;
   }
-  // fit: "contain" shows the whole figure with equal padding; default "cover" crops to fill.
   const isContain = media.fit === "contain";
   const fitClass = isContain ? " fit-contain" : "";
-  // aspect: optional slot-ratio override like "2/1" for COVER mode slots.
-  // Ignored in contain mode, where the media's natural ratio sizes the slot.
-  const aspectStyle = !isContain && media.aspect && /^\d+\s*\/\s*\d+$/.test(media.aspect)
-    ? ` style="aspect-ratio: ${esc(media.aspect)}"`
+  const validAspect = /^\d+\s*\/\s*\d+$/.test(media.aspect || "");
+  const aspectStyle = validAspect
+    ? ` style="--media-aspect: ${esc(media.aspect)}${isContain ? "" : `; aspect-ratio: ${esc(media.aspect)}`}"`
     : "";
+  const dimensions = validAspect ? media.aspect.split("/").map(Number) : [];
+  const sizeAttrs = dimensions.length ? ` width="${dimensions[0]}" height="${dimensions[1]}"` : "";
   if (media.type === "video") {
     return `
       <div class="pub-media${fitClass}"${aspectStyle}>
-        <span class="ph">video teaser</span>
-        ${isContain ? '<span class="media-clip">' : ""}<video src="${esc(media.src)}" autoplay muted loop playsinline
-               onerror="this.remove()"></video>${isContain ? "</span>" : ""}
-        <span class="play-badge">▶ Video</span>
+        ${isContain ? '<span class="media-clip">' : ""}<video id="pub-video-${index}" aria-hidden="true" data-src="${esc(media.src)}" poster="${esc(media.poster || "")}"
+          preload="none" muted loop playsinline${sizeAttrs} aria-label="Video teaser for ${esc(title)}"
+          onerror="this.closest('.pub-media').classList.add('media-error')"></video>${isContain ? "</span>" : ""}
+        <button class="play-badge video-toggle" type="button" aria-controls="pub-video-${index}" aria-label="Play video teaser for ${esc(title)}" aria-pressed="false">▶ Video</button>
+        <span class="media-error-message" role="status">Video unavailable. Please use the paper or project link.</span>
       </div>`;
   }
-  // Default: image. If the file is missing, the placeholder text shows through.
   return `
     <div class="pub-media${fitClass}"${aspectStyle}>
       <span class="ph">teaser figure</span>
-      ${isContain ? '<span class="media-clip">' : ""}<img src="${esc(media.src)}" alt="${esc(media.alt || "")}"
-           onerror="this.remove()">${isContain ? "</span>" : ""}
+      ${isContain ? '<span class="media-clip">' : ""}<img src="${esc(media.src)}" alt="${esc(media.alt || title + ' — overview figure')}"
+        loading="lazy" decoding="async"${sizeAttrs} onerror="this.remove()">${isContain ? "</span>" : ""}
     </div>`;
 }
 
@@ -111,10 +109,10 @@ function linkIcon(label) {
   return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${path}"/></svg>`;
 }
 
-function renderLinks(links) {
+function renderLinks(links, title) {
   if (!links) return "";
   return Object.entries(links)
-    .map(([label, url]) => `<a href="${esc(url)}" target="_blank" rel="noopener">${linkIcon(label)}${esc(label)}</a>`)
+    .map(([label, url]) => `<a href="${esc(url)}" target="_blank" rel="noopener" aria-label="${esc(label)} for ${esc(title)}">${linkIcon(label)}${esc(label)}</a>`)
     .join("");
 }
 
@@ -126,20 +124,20 @@ function renderPublications() {
       ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>`
       : esc(p.title);
     return `
-    <div class="pub${p.featured ? " featured" : ""}"${p.media && p.media.accent ? ` data-accent="${esc(p.media.accent)}"` : ""}>
-      ${renderMedia(p.media)}
+    <article class="pub${p.featured ? " featured" : ""}"${p.media && p.media.accent ? ` data-accent="${esc(p.media.accent)}"` : ""}>
+      ${renderMedia(p.media, p.title, i)}
       <div class="pub-body">
-        <div class="pub-title">${title}</div>
+        <h3 class="pub-title">${title}</h3>
         <div class="pub-authors">${renderAuthors(p.authors)}</div>
         ${p.desc ? `<div class="pub-desc">${esc(p.desc)}</div>` : ""}
         <div class="pub-meta">
           <span class="venue-badge">${esc(p.venue)}</span>
           ${p.award ? `<span class="award-badge">${esc(p.award)}</span>` : ""}
-          ${renderLinks(p.links)}
-          ${p.bibtex ? `<a href="#" class="bib-link" role="button" data-bib="${i}">${linkIcon("bibtex")}bibtex</a>` : ""}
+          ${renderLinks(p.links, p.title)}
+          ${p.bibtex ? `<button type="button" class="bib-link" data-bib="${i}" aria-label="BibTeX citation for ${esc(p.title)}">${linkIcon("bibtex")}bibtex</button>` : ""}
         </div>
       </div>
-    </div>`;
+    </article>`;
   }).join("");
   // Legend appears once, right under the section title, above the cards.
   root.innerHTML = authorsLegend(PUBLICATIONS) + cards;
@@ -155,38 +153,117 @@ function renderPublications() {
 
 /* ----------------------------- BibTeX popup ------------------------------ */
 function openBibtex(bib) {
-  const ov = document.createElement("div");
-  ov.className = "bib-overlay";
-  ov.innerHTML = `
-    <div class="bib-dialog" role="dialog" aria-modal="true" aria-label="BibTeX">
-      <div class="bib-head">
-        <span>BibTeX</span>
-        <button class="bib-close" aria-label="Close">✕</button>
-      </div>
-      <pre class="bib-pre"></pre>
-      <div class="bib-actions"><button class="bib-copy">Copy</button></div>
-    </div>`;
-  ov.querySelector(".bib-pre").textContent = bib;
-
-  const onKey = (e) => { if (e.key === "Escape") close(); };
-  const close = () => { ov.remove(); document.removeEventListener("keydown", onKey); };
-  ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
-  ov.querySelector(".bib-close").addEventListener("click", close);
-  ov.querySelector(".bib-copy").addEventListener("click", async (e) => {
-    const btn = e.currentTarget;
+  const trigger = document.activeElement;
+  const dialog = document.createElement("dialog");
+  dialog.className = "bib-dialog";
+  dialog.setAttribute("aria-labelledby", "bib-title");
+  dialog.innerHTML = `
+    <div class="bib-head">
+      <span id="bib-title">BibTeX</span>
+      <button type="button" class="bib-close" aria-label="Close citation" autofocus>✕</button>
+    </div>
+    <pre class="bib-pre" tabindex="0" aria-label="Citation text"></pre>
+    <div class="bib-actions"><span class="bib-status" role="status"></span><button type="button" class="bib-copy" aria-label="Copy citation">Copy</button></div>`;
+  dialog.querySelector(".bib-pre").textContent = bib;
+  dialog.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const controls = [...dialog.querySelectorAll("button, [tabindex='0']")];
+    const first = controls[0], last = controls[controls.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {
+      e.preventDefault(); first.focus();
+    }
+  });
+  dialog.querySelector(".bib-close").addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (e) => {
+    const r = dialog.getBoundingClientRect();
+    if (e.target === dialog && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) dialog.close();
+  });
+  dialog.addEventListener("close", () => {
+    document.body.classList.remove("dialog-open");
+    dialog.remove();
+    trigger?.focus({ preventScroll: true });
+  }, { once: true });
+  dialog.querySelector(".bib-copy").addEventListener("click", async () => {
+    const status = dialog.querySelector(".bib-status");
     try {
       await navigator.clipboard.writeText(bib);
+      status.textContent = "Citation copied.";
     } catch {
-      // Fallback for non-secure contexts
-      const ta = document.createElement("textarea");
-      ta.value = bib; document.body.appendChild(ta);
-      ta.select(); document.execCommand("copy"); ta.remove();
+      // Keep the selectable citation available when clipboard access is unavailable.
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(dialog.querySelector(".bib-pre"));
+      selection.removeAllRanges();
+      selection.addRange(range);
+      status.textContent = "Select and copy the citation text.";
     }
-    btn.textContent = "Copied ✓";
-    setTimeout(() => { btn.textContent = "Copy"; }, 1500);
   });
-  document.addEventListener("keydown", onKey);
-  document.body.appendChild(ov);
+  document.body.appendChild(dialog);
+  document.body.classList.add("dialog-open");
+  dialog.showModal();
+}
+
+/* Load videos only when visible; honor motion/data preferences until Play is chosen. */
+function initVideos() {
+  const videos = [...document.querySelectorAll(".pub-media video")];
+  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const connection = navigator.connection;
+  const allowAutoplay = () => !motion.matches && !connection?.saveData;
+  const visible = new Set();
+  const load = (video) => {
+    if (!video.hasAttribute("src")) video.src = video.dataset.src;
+  };
+  const play = (video) => {
+    load(video);
+    const pending = video.play();
+    if (pending) pending.catch(() => {});
+  };
+  const update = (video) => {
+    const button = video.closest(".pub-media").querySelector(".video-toggle");
+    const playing = !video.paused;
+    button.textContent = playing ? "Ⅱ Video" : "▶ Video";
+    button.setAttribute("aria-pressed", String(playing));
+    button.setAttribute("aria-label", `${playing ? "Pause" : "Play"} ${video.getAttribute("aria-label")}`);
+  };
+  const sync = () => videos.forEach((video) => {
+    if (document.hidden || !visible.has(video) || video.dataset.userPaused === "true" || (!allowAutoplay() && video.dataset.userStarted !== "true")) video.pause();
+    else play(video);
+  });
+  videos.forEach((video) => {
+    video.addEventListener("play", () => update(video));
+    video.addEventListener("pause", () => update(video));
+    // The preview itself is also a large touch target; the glass badge stays compact.
+    video.addEventListener("click", () => video.closest(".pub-media").querySelector(".video-toggle").click());
+    video.closest(".pub-media").querySelector(".video-toggle").addEventListener("click", () => {
+      if (video.paused) {
+        video.dataset.userPaused = "false";
+        video.dataset.userStarted = "true";
+        visible.add(video);
+        play(video);
+      } else {
+        video.dataset.userPaused = "true";
+        video.pause();
+      }
+    });
+  });
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(({ target, isIntersecting }) => {
+        if (isIntersecting) visible.add(target);
+        else visible.delete(target);
+      });
+      sync();
+    }, { threshold: 0.15 });
+    videos.forEach((video) => observer.observe(video));
+  }
+  document.addEventListener("visibilitychange", sync);
+  motion.addEventListener("change", () => {
+    videos.forEach((video) => { delete video.dataset.userStarted; });
+    sync();
+  });
+  connection?.addEventListener("change", sync);
 }
 
 /* ------------------- Teaser-adaptive card theme --------------------------
@@ -362,14 +439,14 @@ function initTints() {
 
 /* --------------------------------- Init ---------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
-  // Chromium supports backdrop-filter: url(#svg-filter) for true refraction;
-  // navigator.userAgentData only exists in Chromium, making it a safe gate.
+  // Preserve Chromium's original liquid-glass refraction effect.
   if (navigator.userAgentData?.brands?.some((b) => /Chromium/i.test(b.brand))) {
     document.documentElement.classList.add("refract");
   }
   renderNews();
   renderPublications();
   initTints();
+  initVideos();
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
 });
